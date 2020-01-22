@@ -1,0 +1,13 @@
+.myeditor {
+    outline: none;
+    border: 1px solid lightgray;
+    min-height: 1em;
+
+    & > * {
+        pointer-events: none;
+    }
+
+    &.focused {
+        border: 1px solid lightskyblue;
+    }
+}
