@@ -24,6 +24,11 @@ interface IEditorConfig {
     element: HTMLBaseElement
 }
 
+interface ICharSize {
+    width: number
+    height: number
+}
+
 export class Editor {
     public domService: DomService
     public keyService: KeyService
@@ -53,7 +58,22 @@ class DomService {
         this.editorContainer.innerHTML = this.editorContainer.innerHTML + key
     }
 
-    public getSizeNewChar
+    public getSizeOfNewChar(key: string): ICharSize {
+        const element = document.createElement('div')
+        element.style.display = 'inline'
+        element.style.position = 'fixed'
+        element.style.top = '-100vh'
+        element.style.left = '-100vw'
+        element.textContent = key
+        document.body.appendChild(element);
+        const width = element.offsetWidth;
+        const height = element.offsetHeight;
+        element.remove()
+        return {
+            width,
+            height
+        }
+    }
 
     protected prepareEditor():void {
         this.editorContainer.tabIndex = 0
@@ -83,7 +103,7 @@ class DomService {
 
 class KeyService {
     protected editor: Editor
-    protected storage: any[] = []
+    protected storage: {[key: string]: any} = {}
 
     constructor (
         editor: Editor
@@ -92,10 +112,16 @@ class KeyService {
     }
 
 
+
     public nextKey(key: string) {
-        if (this.storage.indexOf(key) === -1) {
-            this.storage.push(key)
+        if (!this.storage[key]) {
+            const sizes = this.editor.domService.getSizeOfNewChar(key)
+            this.storage[key] = {
+                value: key,
+                ...sizes,
+            }
             console.log('new')
+            console.log(this.storage[key])
         }
         this.editor.domService.write(key)
     }
